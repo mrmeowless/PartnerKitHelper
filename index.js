@@ -1,10 +1,10 @@
-import json from 'body-parser'
 import dotenv from 'dotenv'
 import express from 'express'
 import TelegramBot from 'node-telegram-bot-api'
 import { open } from 'sqlite'
-import Database from 'sqlite3'
+import sqlite3 from 'sqlite3'
 dotenv.config()
+sqlite3.verbose()
 
 // === Переменные окружения ===
 const BOT_TOKEN = process.env.BOT_TOKEN
@@ -25,7 +25,8 @@ if (!BOT_TOKEN) {
 
 const bot = new TelegramBot(BOT_TOKEN, { polling: true })
 const app = express()
-app.use(json())
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
 
 let db
 
@@ -33,7 +34,7 @@ let db
 async function initDb() {
 	db = await open({
 		filename: './data.db',
-		driver: Database,
+		driver: sqlite3.Database,
 	})
 
 	await db.exec(`
