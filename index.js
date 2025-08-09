@@ -28,6 +28,17 @@ const app = express()
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
+bot.on('polling_error', error => {
+	console.error('Polling error:', error)
+})
+bot.on('message', msg => {
+	console.log('Получено сообщение:', msg.text)
+})
+console.log('🤖 Telegram-бот запущен и слушает сообщения')
+console.log('BOT_TOKEN:', !!BOT_TOKEN)
+console.log('HOSTNAME:', HOSTNAME)
+console.log('REF_LINKS:', process.env.REF_LINKS)
+
 let db
 
 // === Инициализация базы ===
@@ -66,6 +77,8 @@ async function initDb() {
 
 	// Заполняем офферы
 	const count = await db.get('SELECT COUNT(*) as c FROM offers')
+	console.log(`В базе ${count.c} офферов`)
+
 	if (count.c === 0) {
 		const links = (process.env.REF_LINKS || '')
 			.split(',')
